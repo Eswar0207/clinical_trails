@@ -1,0 +1,24 @@
+name: ClinicalTrialEnv
+slug: clinical-trial-env
+version: 0.1.0
+description: >
+  OpenEnv-style emergency-room triage benchmark with deterministic graders,
+  typed models, and three difficulty-tiered tasks.
+entrypoint: app:app
+benchmark: clinical_trial_env
+tags:
+  - openenv
+  - healthcare
+  - triage
+  - evaluation
+tasks:
+  - id: appendicitis_easy
+    difficulty: easy
+  - id: stroke_alert_medium
+    difficulty: medium
+  - id: septic_shock_hard
+    difficulty: hard
+api:
+  reset: /reset
+  step: /step
+  state: /state
