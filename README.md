@@ -1,3 +1,13 @@
+---
+title: Clinical Trails
+emoji: 🦀
+colorFrom: purple
+colorTo: green
+sdk: docker
+pinned: false
+license: mit
+---
+
 # ClinicalTrialEnv
 
 ClinicalTrialEnv is a real-world OpenEnv-style benchmark for emergency-room triage. An agent receives a patient case, optionally requests targeted information, and then submits a triage decision covering urgency, diagnosis, tests, destination, and immediate interventions.
