@@ -6,6 +6,13 @@ description: >
   typed models, and three difficulty-tiered tasks.
 entrypoint: app:app
 benchmark: clinical_trial_env
+tool:
+  type: function
+  function:
+    name: clinical_trial_env
+    description: >
+      Evaluate emergency-room triage decisions through a two-step investigation
+      and final triage workflow with deterministic scoring.
 tags:
   - openenv
   - healthcare
