@@ -11,6 +11,7 @@ from clinical_trial_env.models import ClinicalTrialAction
 API_BASE_URL = os.getenv("API_BASE_URL", "https://router.huggingface.co/v1")
 MODEL_NAME = os.getenv("MODEL_NAME", "Qwen/Qwen2.5-72B-Instruct")
 HF_TOKEN = os.getenv("HF_TOKEN")
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 LOCAL_IMAGE_NAME = os.getenv("LOCAL_IMAGE_NAME")
 TASK_NAME = os.getenv("CLINICAL_TRIAL_TASK", "appendicitis_easy")
 BENCHMARK = "clinical_trial_env"
@@ -125,8 +126,9 @@ def heuristic_action(observation: dict) -> ClinicalTrialAction:
     }
     return triage_actions[task_id]
 
-
-def get_model_action(client: OpenAI, observation: dict) -> ClinicalTrialAction:
+def get_model_action(client: Optional[OpenAI], observation: dict) -> ClinicalTrialAction:
+    if client is None:
+        raise RuntimeError("no_llm_client_configured")
     prompt = build_user_prompt(observation)
     response = client.chat.completions.create(
         model=MODEL_NAME,
@@ -144,7 +146,12 @@ def get_model_action(client: OpenAI, observation: dict) -> ClinicalTrialAction:
 
 def main() -> None:
     env = ClinicalTrialEnv()
-    client = OpenAI(base_url=API_BASE_URL, api_key=HF_TOKEN)
+    api_key = HF_TOKEN or OPENAI_API_KEY
+    client: Optional[OpenAI]
+    if api_key:
+        client = OpenAI(base_url=API_BASE_URL, api_key=api_key)
+    else:
+        client = None
 
     rewards: List[float] = []
     steps_taken = 0
@@ -162,7 +169,7 @@ def main() -> None:
                 action = get_model_action(client, observation.model_dump())
             except Exception:
                 action = heuristic_action(observation.model_dump())
-                action_error = "model_request_failed_fallback_used"
+                action_error = "heuristic_fallback_used"
 
             result = env.step(action)
             steps_taken += 1
