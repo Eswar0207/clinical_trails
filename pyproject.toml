@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "clinical-trial-env"
+version = "0.1.0"
+description = "OpenEnv-style emergency-room triage benchmark."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+  "fastapi==0.116.1",
+  "openai>=1.40.0",
+  "pydantic==2.11.4",
+  "uvicorn==0.34.0",
+]
+
+[tool.setuptools]
+packages = ["clinical_trial_env"]
