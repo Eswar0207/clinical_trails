@@ -77,3 +77,13 @@ class HealthResponse(BaseModel):
     status: str
     benchmark: str
     tasks: List[str]
+
+
+class TaskDescriptor(BaseModel):
+    id: str
+    difficulty: str
+    grader_enabled: bool = True
+
+
+class TasksResponse(BaseModel):
+    tasks: List[TaskDescriptor]

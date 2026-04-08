@@ -3,7 +3,16 @@ from __future__ import annotations
 from fastapi import FastAPI
 
 from .env import ClinicalTrialEnv
-from .models import ClinicalTrialAction, ClinicalTrialObservation, HealthResponse, ResetRequest, StateResponse, StepResult
+from .models import (
+    ClinicalTrialAction,
+    ClinicalTrialObservation,
+    HealthResponse,
+    ResetRequest,
+    StateResponse,
+    StepResult,
+    TaskDescriptor,
+    TasksResponse,
+)
 from .tasks import TASKS
 
 
@@ -27,5 +36,14 @@ def create_app() -> FastAPI:
     @app.get("/state", response_model=StateResponse)
     def state() -> StateResponse:
         return StateResponse(state=env.state())
+
+    @app.get("/tasks", response_model=TasksResponse)
+    def tasks() -> TasksResponse:
+        return TasksResponse(
+            tasks=[
+                TaskDescriptor(id=task_id, difficulty=task.difficulty, grader_enabled=True)
+                for task_id, task in TASKS.items()
+            ]
+        )
 
     return app

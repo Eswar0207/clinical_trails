@@ -13,7 +13,7 @@ MODEL_NAME = os.getenv("MODEL_NAME", "Qwen/Qwen2.5-72B-Instruct")
 HF_TOKEN = os.getenv("HF_TOKEN")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 LOCAL_IMAGE_NAME = os.getenv("LOCAL_IMAGE_NAME")
-TASK_NAME = os.getenv("CLINICAL_TRIAL_TASK", "appendicitis_easy")
+TASK_NAME = os.getenv("CLINICAL_TRIAL_TASK")
 BENCHMARK = "clinical_trial_env"
 MAX_TOKENS = 300
 TEMPERATURE = 0.2
@@ -144,24 +144,18 @@ def get_model_action(client: Optional[OpenAI], observation: dict) -> ClinicalTri
     return ClinicalTrialAction.model_validate(payload)
 
 
-def main() -> None:
+def run_task(task_name: str, client: Optional[OpenAI]) -> None:
     env = ClinicalTrialEnv()
-    api_key = HF_TOKEN or OPENAI_API_KEY
-    client: Optional[OpenAI]
-    if api_key:
-        client = OpenAI(base_url=API_BASE_URL, api_key=api_key)
-    else:
-        client = None
 
     rewards: List[float] = []
     steps_taken = 0
     success = False
     score = 0.0
 
-    log_start(task=TASK_NAME, env=BENCHMARK, model=MODEL_NAME)
+    log_start(task=task_name, env=BENCHMARK, model=MODEL_NAME)
 
     try:
-        observation = env.reset(task_id=TASK_NAME)
+        observation = env.reset(task_id=task_name)
 
         while not observation.done and steps_taken < observation.max_steps:
             action_error = None
@@ -191,6 +185,23 @@ def main() -> None:
     finally:
         env.close()
         log_end(success=success, steps=steps_taken, score=score, rewards=rewards)
+
+
+def main() -> None:
+    api_key = HF_TOKEN or OPENAI_API_KEY
+    client: Optional[OpenAI]
+    if api_key:
+        client = OpenAI(base_url=API_BASE_URL, api_key=api_key)
+    else:
+        client = None
+
+    if TASK_NAME:
+        tasks = [TASK_NAME]
+    else:
+        tasks = ["appendicitis_easy", "stroke_alert_medium", "septic_shock_hard"]
+
+    for task in tasks:
+        run_task(task_name=task, client=client)
 
 
 if __name__ == "__main__":
