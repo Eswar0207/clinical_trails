@@ -10,10 +10,14 @@ readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
   "fastapi==0.116.1",
+  "openenv-core>=0.2.0",
   "openai>=1.40.0",
   "pydantic==2.11.4",
   "uvicorn==0.34.0",
 ]
 
+[project.scripts]
+server = "server.app:main"
+
 [tool.setuptools]
-packages = ["clinical_trial_env"]
+packages = ["clinical_trial_env", "server"]
